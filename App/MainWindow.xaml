@@ -18,5 +18,10 @@
         <Button HorizontalAlignment="Center" x:Name="btnChangeBackdrop" Content="Change Backdrop"
                 Click="ChangeBackdropButton_Click" />
         <TextBlock x:Name="tbChangeStatus" />
+        <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+            <Button x:Name="PickAFileButton" Content="Open a file"
+                    Click="PickAFileButton_Click" Margin="0,0,0,10"/>
+            <TextBlock x:Name="PickAFileOutputTextBlock" TextWrapping="Wrap" Padding="20,5,0,0"/>
+        </StackPanel>
     </StackPanel>
 </Window>

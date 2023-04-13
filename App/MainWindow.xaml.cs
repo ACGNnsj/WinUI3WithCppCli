@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
 using Windows.System;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
@@ -109,8 +110,38 @@ namespace App
             var path = Process.GetCurrentProcess().MainModule.FileName;
             path = Path.GetDirectoryName(path);
             Img img = new Img();
-            img.showImg(path);
+            img.showImgDefault(path);
             myButton.Content = $"Path: {path}";
+        }
+
+        private async void PickAFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Create a file picker
+            var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
+
+            // Retrieve the window handle (HWND) of the current WinUI 3 window.
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+            // Initialize the file picker with the window handle (HWND).
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+
+            // Set options for your file picker
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
+            openPicker.FileTypeFilter.Add("*");
+
+            // Open the picker for the user to pick a file
+            var file = await openPicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                var path = file.Path;
+                PickAFileOutputTextBlock.Text = "Picked file: " + path;
+                Img img = new Img();
+                img.showImg(path);
+            }
+            else
+            {
+                PickAFileOutputTextBlock.Text = "Operation cancelled.";
+            }
         }
 
         void ChangeBackdropButton_Click(object sender, RoutedEventArgs e)
