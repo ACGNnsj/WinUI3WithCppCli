@@ -41,6 +41,7 @@ namespace App
 
         public MainWindow()
         {
+            Title = "WinUI 3 App";
             this.InitializeComponent();
             TrySetSystemBackdrop();
         }
@@ -240,6 +241,16 @@ namespace App
                     m_configurationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Default;
                     break;
             }
+        }
+
+        private void NewWindowOnClick(object sender, RoutedEventArgs e)
+        {
+            Window newWindow = new Window();
+            var page = new WebView2Page();
+            page.RequestedTheme = Content.As<FrameworkElement>().RequestedTheme;
+            newWindow.Content = page;
+            newWindow.Title = "New Webview2 Window";
+            newWindow.Activate();
         }
     }
 
