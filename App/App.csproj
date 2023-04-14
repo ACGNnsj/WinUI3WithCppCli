@@ -10,29 +10,80 @@
         <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
+        <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <PackageCertificateThumbprint>3E52078B185090E4FF4754158BCE1EDA33591795</PackageCertificateThumbprint>
+        <AppxPackageSigningTimestampDigestAlgorithm>SHA512</AppxPackageSigningTimestampDigestAlgorithm>
+        <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+        <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+        <GenerateTestArtifacts>True</GenerateTestArtifacts>
+        <AppxBundle>Always</AppxBundle>
+        <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+        <HoursBetweenUpdateChecks>168</HoursBetweenUpdateChecks>
+<!--        Cannot run unpackaged app without this whether WAS installed or not-->
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <!--        <SelfContained>true</SelfContained>-->
+        <!--<VcpkgTriplet>x64-windows</VcpkgTriplet>
+        <VcpkgEnabled>true</VcpkgEnabled>
+        <RestoreProjectStyle>PackageReference</RestoreProjectStyle>-->
     </PropertyGroup>
+<!--   Manually copy content files to output directories for running unpackaged app-->
+    <Target Name="CopyBinaries" BeforeTargets="BeforeBuild">
+        <CreateItem Include="$(MSBuildThisFileDirectory)../$(Platform)/$(Configuration)/*">
+            <Output TaskParameter="Include" ItemName="CppBinaries"/>
+        </CreateItem>
+        <Copy SourceFiles="@(CppBinaries)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
+        <CreateItem Include="$(MSBuildThisFileDirectory)/Assets/*">
+            <Output TaskParameter="Include" ItemName="Assets"/>
+        </CreateItem>
+        <Copy SourceFiles="@(Assets)" DestinationFolder="$(OutputPath)/Assets" SkipUnchangedFiles="true"/>
+    </Target>
+
+    <!--<Import Project="D:\VCMI\vcpkg\scripts\buildsystems\msbuild\vcpkg.props"/>
+    <Import Project="D:\VCMI\vcpkg\scripts\buildsystems\msbuild\vcpkg.targets"/>-->
+    <!--<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <PostBuildEvent>
+			<Command>
+				echo off
+				copy "D:\opencv\build\x64\vc16\bin\opencv_world470d.dll" "$(OutDir)"
+				echo on
+			</Command>
+		</PostBuildEvent>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <PostBuildEvent>
+            <Command>
+                echo off
+                copy "D:\opencv\build\x64\vc16\bin\opencv_world470.dll" "$(OutDir)"
+                echo on
+            </Command>
+        </PostBuildEvent>
+    </ItemDefinitionGroup>-->
+
     <ItemGroup>
-      <None Remove="BlankPage1.xaml" />
+        <None Remove="BlankPage1.xaml"/>
+    </ItemGroup>
+
+<!--    Will be copied into AppX folder and msix during packaging-->
+    <ItemGroup>
+        <Content Include="Assets\SplashScreen.scale-200.png"/>
+        <Content Include="Assets\LockScreenLogo.scale-200.png"/>
+        <Content Include="Assets\Square150x150Logo.scale-200.png"/>
+        <Content Include="Assets\Square44x44Logo.scale-200.png"/>
+        <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png"/>
+        <Content Include="Assets\StoreLogo.png"/>
+        <Content Include="Assets\Wide310x150Logo.scale-200.png"/>
+        <Content Include="$(MSBuildThisFileDirectory)../$(Platform)/$(Configuration)/*"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Assets\SplashScreen.scale-200.png" />
-        <Content Include="Assets\LockScreenLogo.scale-200.png" />
-        <Content Include="Assets\Square150x150Logo.scale-200.png" />
-        <Content Include="Assets\Square44x44Logo.scale-200.png" />
-        <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-        <Content Include="Assets\StoreLogo.png" />
-        <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000"/>
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756"/>
+        <Manifest Include="$(ApplicationManifest)"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
-        <Manifest Include="$(ApplicationManifest)" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="../OpenCV/OpenCV.vcxproj" />
+        <ProjectReference Include="../OpenCV/OpenCV.vcxproj"/>
     </ItemGroup>
 
     <!-- 
@@ -41,12 +92,12 @@
       package has not yet been restored.
     -->
     <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-        <ProjectCapability Include="Msix" />
+        <ProjectCapability Include="Msix"/>
     </ItemGroup>
     <ItemGroup>
-      <Page Update="WebView2Page.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+        <Page Update="WebView2Page.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
     </ItemGroup>
 
     <!-- 

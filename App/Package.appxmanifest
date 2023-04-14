@@ -8,8 +8,8 @@
 
   <Identity
     Name="2cb39f36-036c-4cc4-8227-bf86b9f0ad2e"
-    Publisher="CN=ootop"
-    Version="1.0.0.0" />
+    Publisher="CN=ACGMN"
+    Version="0.1.4.0" />
 
   <Properties>
     <DisplayName>App</DisplayName>
