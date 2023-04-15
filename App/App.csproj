@@ -20,23 +20,24 @@
         <AppxBundle>Always</AppxBundle>
         <AppxBundlePlatforms>x64</AppxBundlePlatforms>
         <HoursBetweenUpdateChecks>168</HoursBetweenUpdateChecks>
-<!--        Cannot run unpackaged app without this whether WAS installed or not-->
-        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+<!--        <UnpackagedDeployment>True</UnpackagedDeployment>-->
+        <!--        Cannot run unpackaged app without this whether WAS installed or not-->
+        <WindowsAppSDKSelfContained Condition="'$(UnpackagedDeployment)'=='True'">true</WindowsAppSDKSelfContained>
         <!--        <SelfContained>true</SelfContained>-->
         <!--<VcpkgTriplet>x64-windows</VcpkgTriplet>
         <VcpkgEnabled>true</VcpkgEnabled>
         <RestoreProjectStyle>PackageReference</RestoreProjectStyle>-->
     </PropertyGroup>
-<!--   Manually copy content files to output directories for running unpackaged app-->
-    <Target Name="CopyBinaries" BeforeTargets="BeforeBuild">
+    <!--   Manually copy content files to output directories for running unpackaged app-->
+    <Target Condition="'$(UnpackagedDeployment)'=='True'" Name="CopyBinaries" BeforeTargets="BeforeBuild">
         <CreateItem Include="$(MSBuildThisFileDirectory)../$(Platform)/$(Configuration)/*">
             <Output TaskParameter="Include" ItemName="CppBinaries"/>
         </CreateItem>
         <Copy SourceFiles="@(CppBinaries)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
-        <CreateItem Include="$(MSBuildThisFileDirectory)/Assets/*">
+        <CreateItem Include="$(MSBuildThisFileDirectory)Assets/*">
             <Output TaskParameter="Include" ItemName="Assets"/>
         </CreateItem>
-        <Copy SourceFiles="@(Assets)" DestinationFolder="$(OutputPath)/Assets" SkipUnchangedFiles="true"/>
+        <Copy SourceFiles="@(Assets)" DestinationFolder="$(OutputPath)Assets" SkipUnchangedFiles="true"/>
     </Target>
 
     <!--<Import Project="D:\VCMI\vcpkg\scripts\buildsystems\msbuild\vcpkg.props"/>
@@ -64,7 +65,7 @@
         <None Remove="BlankPage1.xaml"/>
     </ItemGroup>
 
-<!--    Will be copied into AppX folder and msix during packaging-->
+    <!--    Will be copied into AppX folder and msix during packaging-->
     <ItemGroup>
         <Content Include="Assets\SplashScreen.scale-200.png"/>
         <Content Include="Assets\LockScreenLogo.scale-200.png"/>
